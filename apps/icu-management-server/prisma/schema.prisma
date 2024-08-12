@@ -1,0 +1,70 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DB_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model NurseMonitoringChart {
+  bp        String?
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  id        String    @id @default(cuid())
+  patient   Patient?  @relation(fields: [patientId], references: [id])
+  patientId String?
+  spo2      Int?
+  time      DateTime?
+  updatedAt DateTime  @updatedAt
+}
+
+model Patient {
+  age                   Int?
+  contactNumber         String?
+  createdAt             DateTime               @default(now())
+  doctorProgressNotes   DoctorProgressNote[]
+  gender                EnumPatientGender?
+  id                    String                 @id @default(cuid())
+  name                  String?
+  nurseMedicationCharts NurseMedicationChart[]
+  nurseMonitoringCharts NurseMonitoringChart[]
+  updatedAt             DateTime               @updatedAt
+}
+
+model NurseMedicationChart {
+  createdAt  DateTime  @default(now())
+  date       DateTime?
+  id         String    @id @default(cuid())
+  medication String?
+  patient    Patient?  @relation(fields: [patientId], references: [id])
+  patientId  String?
+  time       DateTime?
+  updatedAt  DateTime  @updatedAt
+}
+
+model DoctorProgressNote {
+  createdAt DateTime  @default(now())
+  date      DateTime?
+  id        String    @id @default(cuid())
+  note      String?
+  patient   Patient?  @relation(fields: [patientId], references: [id])
+  patientId String?
+  updatedAt DateTime  @updatedAt
+}
+
+model User {
+  createdAt DateTime @default(now())
+  email     String?  @unique
+  firstName String?
+  id        String   @id @default(cuid())
+  lastName  String?
+  password  String
+  roles     Json
+  updatedAt DateTime @updatedAt
+  username  String   @unique
+}
+
+enum EnumPatientGender {
+  Option1
+}
